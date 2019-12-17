@@ -12,11 +12,13 @@ import timeit
 
 def profile(func):
     """A function that can be used as a decorator to measure performance"""
-    def wrapper():
-        print('running %s' % func.__name__)
-        func()
-        print('done running %s' % func.__name__)
-
+    def wrapper(file):
+        profile = cProfile.Profile()
+        profile.enable()
+        func(file)
+        profile.disable()
+        stats = pstats.Stats(profile).sort_stats('cumulative')
+        stats.print_stats()
     return wrapper
 
 
@@ -35,6 +37,7 @@ def is_duplicate(title, movies):
     return False
 
 
+@profile
 def find_duplicate_movies(src):
     """Returns a list of duplicate movies from a src list"""
     movies = read_movies(src)
@@ -54,11 +57,9 @@ def timeit_helper():
     print('Best time across 7 repeat of function calls 3 times is: %s' % avg_time)
 
 
-@profile
 def main():
     """Computes a list of duplicate movie entries"""
-    timeit_helper()
-    # result = find_duplicate_movies('movies.txt')
+    result = find_duplicate_movies('movies.txt')
     # print('Found {} duplicate movies:'.format(len(result)))
     # print('\n'.join(result))
 
