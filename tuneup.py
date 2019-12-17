@@ -7,14 +7,17 @@ __author__ = "???"
 import cProfile
 import pstats
 import functools
+import timeit
 
 
 def profile(func):
     """A function that can be used as a decorator to measure performance"""
-    # You need to understand how decorators are constructed and used.
-    # Be sure to review the lesson material on decorators, they are used
-    # extensively in Django and Flask.
-    raise NotImplementedError("Complete this decorator function")
+    def wrapper():
+        print('running %s' % func.__name__)
+        func()
+        print('done running %s' % func.__name__)
+
+    return wrapper
 
 
 def read_movies(src):
@@ -45,14 +48,19 @@ def find_duplicate_movies(src):
 
 def timeit_helper():
     """Part A:  Obtain some profiling measurements using timeit"""
-    # YOUR CODE GOES HERE
+    t = timeit.Timer(lambda: find_duplicate_movies('movies.txt'))
+    results = t.repeat(repeat=7, number=3)
+    avg_time = min([time / 3 for time in results])
+    print('Best time across 7 repeat of function calls 3 times is: %s' % avg_time)
 
 
+@profile
 def main():
     """Computes a list of duplicate movie entries"""
-    result = find_duplicate_movies('movies.txt')
-    print('Found {} duplicate movies:'.format(len(result)))
-    print('\n'.join(result))
+    timeit_helper()
+    # result = find_duplicate_movies('movies.txt')
+    # print('Found {} duplicate movies:'.format(len(result)))
+    # print('\n'.join(result))
 
 
 if __name__ == '__main__':
